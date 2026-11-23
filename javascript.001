@@ -1,0 +1,130 @@
+/**
+ * Representa uma única movimentação financeira (receita ou despesa).
+ */
+class Transacao {
+  constructor({ id = null, descricao, valor, tipo, categoria, data = new Date() }) {
+    this.id = id || crypto.randomUUID();
+    this.descricao = descricao.trim();
+    this.valor = parseFloat(valor);
+    this.tipo = tipo; // 'receita' ou 'despesa'
+    this.categoria = categoria.trim();
+    this.data = new Date(data).toISOString();
+  }
+}
+
+/**
+ * Gerencia todas as operações do sistema financeiro.
+ */
+class ControleFinanceiro {
+  constructor(chaveStorage = '@financas_pessoais:transacoes') {
+    this.chaveStorage = chaveStorage;
+    this.transacoes = this._carregarDoStorage();
+  }
+
+  // --- PERSISTÊNCIA (LocalStorage) ---
+
+  _carregarDoStorage() {
+    const dados = localStorage.getItem(this.chaveStorage);
+    return dados ? JSON.parse(dados) : [];
+  }
+
+  _salvarNoStorage() {
+    localStorage.setItem(this.chaveStorage, JSON.stringify(this.transacoes));
+  }
+
+  // --- OPERAÇÕES CRUD ---
+
+  adicionar({ descricao, valor, tipo, categoria, data }) {
+    if (!descricao || isNaN(valor) || valor <= 0) {
+      throw new Error('Descrição inválida ou valor menor/igual a zero.');
+    }
+    if (!['receita', 'despesa'].includes(tipo)) {
+      throw new Error('O tipo deve ser "receita" ou "despesa".');
+    }
+
+    const novaTransacao = new Transacao({ descricao, valor, tipo, categoria, data });
+    this.transacoes.push(novaTransacao);
+    this._salvarNoStorage();
+    return novaTransacao;
+  }
+
+  remover(id) {
+    const tamanhoInicial = this.transacoes.length;
+    this.transacoes = this.transacoes.filter((t) => t.id !== id);
+    
+    if (this.transacoes.length !== tamanhoInicial) {
+      this._salvarNoStorage();
+      return true;
+    }
+    return false;
+  }
+
+  editar(id, novosDados) {
+    const index = this.transacoes.findIndex((t) => t.id === id);
+    if (index === -1) return null;
+
+    this.transacoes[index] = {
+      ...this.transacoes[index],
+      ...novosDados,
+      valor: novosDados.valor ? parseFloat(novosDados.valor) : this.transacoes[index].valor
+    };
+
+    this._salvarNoStorage();
+    return this.transacoes[index];
+  }
+
+  // --- CÁLCULOS E RELATÓRIOS ---
+
+  obterResumo() {
+    return this.transacoes.reduce(
+      (acc, transacao) => {
+        if (transacao.tipo === 'receita') {
+          acc.receitas += transacao.valor;
+          acc.saldo += transacao.valor;
+        } else {
+          acc.despesas += transacao.valor;
+          acc.saldo -= transacao.valor;
+        }
+        return acc;
+      },
+      { receitas: 0, despesas: 0, saldo: 0 }
+    );
+  }
+
+  filtrar({ tipo = null, categoria = null, mes = null, ano = null } = {}) {
+    return this.transacoes.filter((t) => {
+      const dataTransacao = new Date(t.data);
+      
+      const bateTipo = tipo ? t.tipo === tipo : true;
+      const bateCategoria = categoria ? t.categoria.toLowerCase() === categoria.toLowerCase() : true;
+      const bateMes = mes !== null ? dataTransacao.getMonth() + 1 === mes : true; // Mês de 1 a 12
+      const bateAno = ano !== null ? dataTransacao.getFullYear() === ano : true;
+
+      return bateTipo && bateCategoria && bateMes && bateAno;
+    });
+  }
+
+  agruparPorCategoria(tipo = 'despesa') {
+    return this.transacoes
+      .filter((t) => t.tipo === tipo)
+      .reduce((acc, t) => {
+        acc[t.categoria] = (acc[t.categoria] || 0) + t.valor;
+        return acc;
+      }, {});
+  }
+}
+
+// --- UTILITÁRIOS DE FORMATAÇÃO ---
+
+const Formatador = {
+  moeda(valor) {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
+  },
+
+  data(dataISO) {
+    return new Intl.DateTimeFormat('pt-BR').format(new Date(dataISO));
+  }
+};

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle Financeiro Pessoal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Controle Financeiro</h1>
+    </header>
+
+    <!-- Cards de Resumo -->
+    <section class="summary">
+      <div class="card income">
+        <h3>Entradas</h3>
+        <p id="total-income">R$ 0,00</p>
+      </div>
+      <div class="card expense">
+        <h3>Saídas</h3>
+        <p id="total-expense">R$ 0,00</p>
+      </div>
+      <div class="card balance">
+        <h3>Saldo Total</h3>
+        <p id="total-balance">R$ 0,00</p>
+      </div>
+    </section>
+
+    <!-- Formulário de Nova Transação -->
+    <section class="form-section">
+      <h2>Nova Transação</h2>
+      <form id="transaction-form">
+        <input type="text" id="description" placeholder="Descrição (ex: Salário, Aluguel)" required>
+        <input type="number" id="amount" step="0.01" min="0.01" placeholder="Valor (R$)" required>
+        
+        <select id="type" required>
+          <option value="income">Entrada (+)</option>
+          <option value="expense">Saída (-)</option>
+        </select>
+
+        <select id="category" required>
+          <option value="Salário">Salário</option>
+          <option value="Alimentação">Alimentação</option>
+          <option value="Moradia">Moradia</option>
+          <option value="Lazer">Lazer</option>
+          <option value="Transporte">Transporte</option>
+          <option value="Outros">Outros</option>
+        </select>
+
+        <input type="date" id="date" required>
+        <button type="submit">Adicionar</button>
+      </form>
+    </section>
+
+    <!-- Filtro e Histórico -->
+    <section class="history-section">
+      <div class="history-header">
+        <h2>Histórico de Transações</h2>
+        <select id="filter-type">
+          <option value="all">Todas</option>
+          <option value="income">Apenas Entradas</option>
+          <option value="expense">Apenas Saídas</option>
+        </select>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Data</th>
+            <th>Valor</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="transaction-list">
+          <!-- Inserido via JavaScript -->
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

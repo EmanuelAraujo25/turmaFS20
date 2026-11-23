@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle financeiro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Controle financeiro</h1>
+
+    <!-- Resumo -->
+    <section class="resumo">
+      <div class="caixa">
+        <span>Receitas</span>
+        <strong id="total-receitas" class="receita">R$ 0,00</strong>
+      </div>
+      <div class="caixa">
+        <span>Despesas</span>
+        <strong id="total-despesas" class="despesa">R$ 0,00</strong>
+      </div>
+      <div class="caixa">
+        <span>Saldo</span>
+        <strong id="saldo">R$ 0,00</strong>
+      </div>
+    </section>
+
+    <!-- Formulário -->
+    <form id="formulario">
+      <h2>Novo lançamento</h2>
+
+      <label for="descricao">Descrição</label>
+      <input type="text" id="descricao" required>
+
+      <label for="valor">Valor (R$)</label>
+      <input type="number" id="valor" step="0.01" min="0.01" required>
+
+      <label for="data">Data</label>
+      <input type="date" id="data" required>
+
+      <label for="tipo">Tipo</label>
+      <select id="tipo">
+        <option value="despesa">Despesa</option>
+        <option value="receita">Receita</option>
+      </select>
+
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <!-- Lista -->
+    <section>
+      <h2>Lançamentos</h2>
+      <ul id="lista"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

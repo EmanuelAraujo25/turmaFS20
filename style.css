@@ -1,0 +1,313 @@
+/* =========================================================
+   CONTROLE FINANCEIRO PESSOAL — tema Persona 3 Reload
+   Azul elétrico, ciano de água e cortes diagonais.
+   Usa as MESMAS classes do style.css (preto e roxo):
+   para trocar de tema, basta trocar o arquivo no <link>.
+   ========================================================= */
+
+/* 1. VARIÁVEIS ----------------------------------------------
+   Paleta inspirada na Dark Hour: azul-marinho profundo,
+   azul elétrico e ciano de água. */
+:root {
+  --abismo:       #020b1c;   /* fundo da página */
+  --marinho:      #06162e;   /* fundo dos cartões */
+  --marinho-2:    #0b2347;   /* campos, hover */
+  --borda:        #15407a;
+
+  --azul:         #1e90ff;   /* cor principal */
+  --azul-forte:   #0a5bd8;   /* botão pressionado */
+  --agua:         #5ee7ff;   /* destaques, brilho */
+  --gelo:         #d9f6ff;   /* quase branco azulado */
+
+  --texto:        #e9f7ff;
+  --texto-suave:  #7fa6c9;
+
+  --receita:      #3dffb0;
+  --despesa:      #ff5d7a;
+
+  --corte:        14px;      /* tamanho do canto cortado */
+  --fonte-titulo: "Bebas Neue", "Oswald", Impact, "Arial Narrow", sans-serif;
+  --fonte:        "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* 2. RESET E BASE ------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--fonte);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--texto);
+  /* Fundo em camadas: luz azul no topo + água escura embaixo */
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(30,144,255,.35), transparent 70%),
+    linear-gradient(180deg, var(--abismo), #010714);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  margin: 0 0 .5rem;
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  letter-spacing: .04em;
+  line-height: 1.1;
+}
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.6rem; color: var(--agua); }
+a  { color: var(--agua); }
+
+:focus-visible {
+  outline: 2px solid var(--agua);
+  outline-offset: 2px;
+}
+
+/* 3. ESTRUTURA DA PÁGINA ------------------------------------ */
+/* Este é o elemento marcante do tema: o cabeçalho é um bloco azul
+   inclinado com uma "onda" de água animada embaixo. */
+.cabecalho {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem 2.25rem;
+  background: linear-gradient(100deg, var(--azul-forte), var(--azul) 60%, var(--agua));
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 0 100%);   /* borda inferior diagonal */
+  box-shadow: 0 10px 40px rgba(30,144,255,.4);
+}
+
+.cabecalho h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #fff;
+  transform: skewX(-8deg);                 /* título inclinado */
+  text-shadow: 3px 3px 0 var(--abismo);
+}
+
+/* Ondas feitas só com CSS: dois gradientes que deslizam */
+.cabecalho::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 14px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.35) 0 24px, transparent 24px 48px);
+  opacity: .5;
+  animation: onda 6s linear infinite;
+}
+
+@keyframes onda {
+  to { background-position-x: 48px; }
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+/* 4. CARTÕES ------------------------------------------------ */
+/* Canto superior direito e inferior esquerdo cortados,
+   como os painéis do menu do jogo. */
+.cartao {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(160deg, var(--marinho-2), var(--marinho));
+  border-left: 4px solid var(--azul);
+  clip-path: polygon(0 0, calc(100% - var(--corte)) 0, 100% var(--corte),
+                     100% 100%, var(--corte) 100%, 0 calc(100% - var(--corte)));
+}
+
+.resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.resumo .cartao span {
+  display: block;
+  font-size: .875rem;
+  color: var(--texto-suave);
+}
+
+.resumo .cartao strong {
+  display: block;
+  margin-top: .25rem;
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  font-size: 2.4rem;
+  letter-spacing: .03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* O saldo é o cartão "aceso": azul brilhante com reflexo de água */
+.cartao-saldo {
+  background:
+    linear-gradient(160deg, rgba(255,255,255,.18), transparent 45%),
+    linear-gradient(135deg, var(--azul-forte), var(--azul) 55%, var(--agua));
+  border-left-color: #fff;
+}
+.cartao-saldo span { color: var(--gelo); }
+
+.valor-receita { color: var(--receita); }
+.valor-despesa { color: var(--despesa); }
+
+/* 5. FORMULÁRIO --------------------------------------------- */
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(11,35,71,.55);
+  border-top: 2px solid var(--azul);
+}
+
+label {
+  display: block;
+  margin-bottom: .35rem;
+  font-size: .875rem;
+  color: var(--texto-suave);
+}
+
+input, select {
+  width: 100%;
+  padding: .7rem .85rem;
+  font: inherit;
+  color: var(--texto);
+  background: var(--abismo);
+  border: 1px solid var(--borda);
+  border-bottom: 2px solid var(--azul);
+  border-radius: 0;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--agua);
+  box-shadow: 0 6px 16px -6px rgba(94,231,255,.6);
+}
+
+::placeholder { color: var(--texto-suave); }
+
+/* 6. BOTÕES ------------------------------------------------- */
+/* Paralelogramo inclinado, no estilo dos botões do menu */
+.botao {
+  padding: .75rem 1.75rem;
+  font-family: var(--fonte-titulo);
+  font-size: 1.15rem;
+  letter-spacing: .06em;
+  color: var(--abismo);
+  background: linear-gradient(90deg, var(--agua), #8ff0ff);
+  border: 0;
+  cursor: pointer;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  transition: filter .15s, transform .15s;
+}
+
+.botao:hover  { filter: brightness(1.1); transform: translateX(3px); }
+.botao:active { background: var(--azul-forte); color: #fff; }
+
+.botao-secundario {
+  color: var(--agua);
+  background: var(--marinho-2);
+  box-shadow: inset 0 0 0 1px var(--azul);
+}
+.botao-secundario:hover { background: var(--borda); }
+
+.botao-excluir {
+  padding: .3rem .7rem;
+  font-size: .85rem;
+  color: var(--despesa);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.botao-excluir:hover { border-color: var(--despesa); }
+
+/* 7. TABELA DE TRANSAÇÕES ----------------------------------- */
+.tabela-wrapper {
+  overflow-x: auto;
+  background: var(--marinho);
+  border-top: 2px solid var(--azul);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: .85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(21,64,122,.6);
+}
+
+th {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: .06em;
+  color: var(--agua);
+  background: var(--marinho-2);
+}
+
+/* Linha sob o mouse ganha uma faixa de luz azul à esquerda */
+tbody tr { transition: background .15s; }
+tbody tr:hover {
+  background: linear-gradient(90deg, rgba(30,144,255,.28), transparent);
+  box-shadow: inset 4px 0 0 var(--agua);
+}
+
+td.valor { font-variant-numeric: tabular-nums; text-align: right; }
+
+.etiqueta {
+  display: inline-block;
+  padding: .15rem .8rem;
+  font-size: .8rem;
+  color: var(--abismo);
+  background: var(--agua);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+.vazio {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+/* 8. BARRA DE PROGRESSO ------------------------------------- */
+/* Parece um nível de água subindo */
+.progresso {
+  height: 12px;
+  background: var(--abismo);
+  border: 1px solid var(--borda);
+  transform: skewX(-20deg);
+  overflow: hidden;
+}
+.progresso > div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--azul), var(--agua));
+  box-shadow: 0 0 12px var(--agua);
+}
+.progresso > div.estourou {
+  background: linear-gradient(90deg, #b3123a, var(--despesa));
+  box-shadow: 0 0 12px var(--despesa);
+}
+
+/* 9. RESPONSIVO --------------------------------------------- */
+@media (max-width: 600px) {
+  .cabecalho { padding: 1rem 1rem 2rem; }
+  .cabecalho h1 { font-size: 1.9rem; }
+  .container { padding: 1.5rem .75rem 3rem; }
+  .resumo .cartao strong { font-size: 2rem; }
+}
+
+/* Respeita quem prefere menos animação */
+@media (prefers-reduced-motion: reduce) {
+  *, *::after { animation: none !important; transition: none !important; }
+}
